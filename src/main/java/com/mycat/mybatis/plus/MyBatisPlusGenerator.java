@@ -51,7 +51,7 @@ public class MyBatisPlusGenerator {
 
         dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
                 .setDriverName("com.mysql.jdbc.Driver")
-                .setUrl("jdbc:mysql://10.122.30.102:3306/bank_collection?characterEncoding=utf-8&useSSL=false")
+                .setUrl("jdbc:mysql://10.122.30.102:3306/trading_financial_statement_dev?characterEncoding=utf-8&useSSL=false")
                 .setUsername("ordercenter_testuser")
                 .setPassword("abcd-1234");
 //        dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
@@ -66,8 +66,9 @@ public class MyBatisPlusGenerator {
 //                    .setDbColumnUnderline(true)  // 指定表名 字段名是否使用下划线
                 .setNaming(NamingStrategy.underline_to_camel) // 数据库表映射到实体的命名策略
                 //.setTablePrefix("tbl_")
-                .setInclude(new String[] { "base_gab","base_kab","base_kab_back", "base_gab_back"})
-        ;  // 生成的表
+
+                // 生成的表
+                .setInclude(new String[]{"base_accounts_receivable", "base_accounts_receivable_detail", "base_invoice", "base_rebate", "base_soldto", "base_soldto_agreement", "base_white_list"});
 
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();
