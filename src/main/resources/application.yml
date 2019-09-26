@@ -22,6 +22,25 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+
+
+
+
+kafka:
+  bootstrap_servers: 10.122.45.154:9092,10.122.45.155:9092
+  key_deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  value_deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  auto_offset_reset: latest
+  auto_commit: true
+
+  agreements_group: consumer-order-ma-create
+  purchase_group: consumer-financial-statement
+
+purchase_topic: cc-distributor-signinfo-v1
+agreements_topic: cc-distributor-ma-create
+
+
+
 #   MP支持以下4中主键策略，可根据需求自行选用
 #    主键注解 @TableId
 #    value	字段值（驼峰命名方式，该值可无）
