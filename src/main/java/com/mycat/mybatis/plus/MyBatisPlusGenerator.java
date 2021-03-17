@@ -45,7 +45,7 @@ public class MyBatisPlusGenerator {
                 .setControllerName("%sController")
                 // IEmployeeService
                 .setServiceName("%sService") // 设置生成的service接口的名字的首字母是否为I
-                .setServiceImplName("%sServiceImpl")
+                //.setServiceImplName("%sServiceImpl")
                 .setMapperName("%sMapper")
                 .setXmlName("%sMapper")
                 // .setEntityName("%sVo")
@@ -62,9 +62,9 @@ public class MyBatisPlusGenerator {
 
         dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
                 .setDriverName("com.mysql.jdbc.Driver")
-                .setUrl("jdbc:mysql://10.122.30.102:3306/bank_collection?characterEncoding=utf-8&useSSL=false")
-                .setUsername("ordercenter_testuser")
-                .setPassword("abcd-1234");
+                .setUrl("jdbc:mysql://127.0.0.1:3306/fly?characterEncoding=utf-8&useSSL=false")
+                .setUsername("root")
+                .setPassword("root");
 //        dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
 //                .setDriverName("com.mysql.jdbc.Driver")
 //                .setUrl("jdbc:mysql://localhost:3306/fly")
@@ -89,14 +89,16 @@ public class MyBatisPlusGenerator {
                 //   .setTableFillList(tableFill)   //自动填充
                 // .setVersionFieldName("version")    //乐观锁的列
                 // 生成的表
-                .setInclude(new String[]{"base_gab_hx", "base_gab_hx_history", "base_kab_hx", "base_kab_hx_history"});
+//                .setInclude(new String[]{"base_gab_hx", "base_gab_hx_history", "base_kab_hx", "base_kab_hx_history"});
+                .setInclude(new String[]{"dep"});
+
 
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();
         pkConfig.setParent("com.mycat.mybatis.plus")
                 .setMapper("mapper")//dao
                 .setService("service")//servcie
-                .setServiceImpl("%sServiceImpl")
+                .setServiceImpl("service.impl")
                 .setController("controller")//controller
                 .setEntity("bean")
                 .setXml("mapper");//mapper.xml
