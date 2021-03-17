@@ -2,15 +2,18 @@ package com.mycat.mybatis.plus;
 
 
 import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.po.TableFill;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * 以动手实践为荣,以只看不练为耻.
@@ -33,14 +36,22 @@ public class MyBatisPlusGenerator {
         GlobalConfig config = new GlobalConfig();
         config.setActiveRecord(true) // 是否支持AR模式
                 .setAuthor("LvZheng") // 作者
+                .setSwagger2(true)
                 .setOutputDir(projectPath + "/src/main/java")
                 .setFileOverride(true)  // 文件覆盖
                 .setIdType(IdType.AUTO) // 主键策略
-                .setServiceName("%sService")  // 设置生成的service接口的名字的首字母是否为I
+
+                // .setMapperName("%sRepository")//jpa需要 如果使用MP  注释该代码
+                .setControllerName("%sController")
                 // IEmployeeService
-                .setMapperName("%sRepository")//jpa需要 如果使用MP  注释该代码
+                .setServiceName("%sService") // 设置生成的service接口的名字的首字母是否为I
+                .setServiceImplName("%sServiceImpl")
+                .setMapperName("%sMapper")
+                .setXmlName("%sMapper")
+                // .setEntityName("%sVo")
                 .setBaseResultMap(true)//生成基本的resultMap
                 .setBaseColumnList(true);//生成基本的SQL片段
+
 
         //2. 数据源配置
         DataSourceConfig dsConfig = new DataSourceConfig();
@@ -51,7 +62,7 @@ public class MyBatisPlusGenerator {
 
         dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
                 .setDriverName("com.mysql.jdbc.Driver")
-                .setUrl("jdbc:mysql://10.122.30.102:3306/trading_financial_statement_dev?characterEncoding=utf-8&useSSL=false")
+                .setUrl("jdbc:mysql://10.122.30.102:3306/bank_collection?characterEncoding=utf-8&useSSL=false")
                 .setUsername("ordercenter_testuser")
                 .setPassword("abcd-1234");
 //        dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
@@ -62,22 +73,34 @@ public class MyBatisPlusGenerator {
 
         //3. 策略配置globalConfiguration中
         StrategyConfig stConfig = new StrategyConfig();
+        //自动填充
+        ArrayList<TableFill> tableFill = new ArrayList();
+        TableFill createTime = new TableFill("create_time", FieldFill.INSERT);
+        TableFill updateTime = new TableFill("update_time", FieldFill.INSERT_UPDATE);
+        tableFill.add(createTime);
+        tableFill.add(updateTime);
+
         stConfig.setCapitalMode(true) //全局大写命名
 //                    .setDbColumnUnderline(true)  // 指定表名 字段名是否使用下划线
                 .setNaming(NamingStrategy.underline_to_camel) // 数据库表映射到实体的命名策略
-                //.setTablePrefix("tbl_")
-
+                //.setTablePrefix("tbl_")  //去除表前缀
+                //  .setFieldPrefix("") //去除字段前缀
+                .setEntityLombokModel(true)
+                //   .setTableFillList(tableFill)   //自动填充
+                // .setVersionFieldName("version")    //乐观锁的列
                 // 生成的表
-                .setInclude(new String[]{"base_accounts_receivable", "base_accounts_receivable_detail", "base_invoice", "base_rebate", "base_soldto", "base_soldto_agreement", "base_white_list"});
+                .setInclude(new String[]{"base_gab_hx", "base_gab_hx_history", "base_kab_hx", "base_kab_hx_history"});
 
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();
         pkConfig.setParent("com.mycat.mybatis.plus")
                 .setMapper("mapper")//dao
                 .setService("service")//servcie
+                .setServiceImpl("%sServiceImpl")
                 .setController("controller")//controller
-                .setEntity("entity")
+                .setEntity("bean")
                 .setXml("mapper");//mapper.xml
+
 
         //5. 整合配置
         AutoGenerator ag = new AutoGenerator();
