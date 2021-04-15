@@ -46,7 +46,7 @@ public class MyBatisPlusGenerator {
                 // IEmployeeService
                 .setServiceName("%sService") // 设置生成的service接口的名字的首字母是否为I
                 //.setServiceImplName("%sServiceImpl")
-                .setMapperName("%sMapper")
+                .setMapperName("%sDao")
                 .setXmlName("%sMapper")
                 // .setEntityName("%sVo")
                 .setBaseResultMap(true)//生成基本的resultMap
@@ -56,20 +56,17 @@ public class MyBatisPlusGenerator {
         //2. 数据源配置
         DataSourceConfig dsConfig = new DataSourceConfig();
 
-//        username: ordercenter_testuser
-//        password: abcd-1234
-//        url: jdbc:mysql://10.122.30.102:3306/bank_collection?characterEncoding=utf-8&useSSL=false
 
-        dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
-                .setDriverName("com.mysql.jdbc.Driver")
-                .setUrl("jdbc:mysql://127.0.0.1:3306/fly?characterEncoding=utf-8&useSSL=false")
-                .setUsername("root")
-                .setPassword("root");
 //        dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
 //                .setDriverName("com.mysql.jdbc.Driver")
-//                .setUrl("jdbc:mysql://localhost:3306/fly")
+//                .setUrl("jdbc:mysql://192.168.205.233:3307/all_antifraud?characterEncoding=utf-8&useSSL=false")
 //                .setUsername("root")
-//                .setPassword("root");
+//                .setPassword("eversec123098");
+        dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
+                .setDriverName("com.mysql.jdbc.Driver")
+                .setUrl("jdbc:mysql://localhost:3307/lz8")
+                .setUsername("root")
+                .setPassword("root");
 
         //3. 策略配置globalConfiguration中
         StrategyConfig stConfig = new StrategyConfig();
@@ -90,7 +87,7 @@ public class MyBatisPlusGenerator {
                 // .setVersionFieldName("version")    //乐观锁的列
                 // 生成的表
 //                .setInclude(new String[]{"base_gab_hx", "base_gab_hx_history", "base_kab_hx", "base_kab_hx_history"});
-                .setInclude(new String[]{"dep"});
+                .setInclude(new String[]{"opc_result","point"});
 
 
         //4. 包名策略配置
