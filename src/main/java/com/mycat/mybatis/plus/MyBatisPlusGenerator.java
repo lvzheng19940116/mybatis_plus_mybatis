@@ -5,15 +5,25 @@ import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
+import com.baomidou.mybatisplus.generator.config.FileOutConfig;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.TemplateConfig;
 import com.baomidou.mybatisplus.generator.config.po.TableFill;
+import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.mycat.mybatis.config.GenUtils;
+import com.mycat.mybatis.config.MpGenConfig;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 以动手实践为荣,以只看不练为耻.
@@ -30,27 +40,30 @@ import java.util.ArrayList;
  */
 public class MyBatisPlusGenerator {
 
+    static String projectPath = System.getProperty("user.dir");
+
     public static void main(String[] args) throws SQLException {
-        String projectPath = System.getProperty("user.dir");
+
+        MpGenConfig mpGenConfig = GenUtils.getAll();
         //1. 全局配置
         GlobalConfig config = new GlobalConfig();
         config.setActiveRecord(true) // 是否支持AR模式
-                .setAuthor("LvZheng") // 作者
+                .setAuthor(mpGenConfig.getAuthor()) // 作者
                 .setSwagger2(true)
                 .setOutputDir(projectPath + "/src/main/java")
                 .setFileOverride(true)  // 文件覆盖
                 .setIdType(IdType.AUTO) // 主键策略
 
-                // .setMapperName("%sRepository")//jpa需要 如果使用MP  注释该代码
                 .setControllerName("%sController")
                 // IEmployeeService
                 .setServiceName("%sService") // 设置生成的service接口的名字的首字母是否为I
                 //.setServiceImplName("%sServiceImpl")
-                .setMapperName("%sDao")
+                .setMapperName("%sMapper")
                 .setXmlName("%sMapper")
                 // .setEntityName("%sVo")
                 .setBaseResultMap(true)//生成基本的resultMap
-                .setBaseColumnList(true);//生成基本的SQL片段
+                .setBaseColumnList(true)//生成基本的SQL片段
+                .setOpen(false);
 
 
         //2. 数据源配置
@@ -64,9 +77,10 @@ public class MyBatisPlusGenerator {
 //                .setPassword("eversec123098");
         dsConfig.setDbType(DbType.MYSQL)  // 设置数据库类型
                 .setDriverName("com.mysql.jdbc.Driver")
-                .setUrl("jdbc:mysql://localhost:3307/lz8")
-                .setUsername("root")
-                .setPassword("root");
+                // .setUrl("jdbc:mysql://localhost:3307/lz8")
+                .setUrl(mpGenConfig.getDburl())
+                .setUsername(mpGenConfig.getDbusername())
+                .setPassword(mpGenConfig.getDbpassword());
 
         //3. 策略配置globalConfiguration中
         StrategyConfig stConfig = new StrategyConfig();
@@ -87,12 +101,13 @@ public class MyBatisPlusGenerator {
                 // .setVersionFieldName("version")    //乐观锁的列
                 // 生成的表
 //                .setInclude(new String[]{"base_gab_hx", "base_gab_hx_history", "base_kab_hx", "base_kab_hx_history"});
-                .setInclude(new String[]{"opc_result","point"});
+                .setInclude(mpGenConfig.getTable().split(","));
+        // .setInclude(new String[]{"user"});
 
 
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();
-        pkConfig.setParent("com.mycat.mybatis.plus")
+        pkConfig.setParent(mpGenConfig.getParentpackage())
                 .setMapper("mapper")//dao
                 .setService("service")//servcie
                 .setServiceImpl("service.impl")
@@ -101,13 +116,49 @@ public class MyBatisPlusGenerator {
                 .setXml("mapper");//mapper.xml
 
 
+        //自定义模版
+        TemplateConfig tc = new TemplateConfig();
+        tc.setController("/vm/controller.java");
+        //     .setService("/vm/PageSearchVO.java");
+//                .setServiceImpl("/simple/serviceImpl.java")
+//                .setEntity("/simple/entity.java")
+//                .setMapper("/simple/mapper.java")
+//                .setXml("/simple/mapper.xml");
+
+        //自定义生成文件
+        InjectionConfig cfg = new InjectionConfig() {
+            @Override
+            public void initMap() {
+                Map<String, Object> map = new HashMap<String, Object>();
+                //自定义参数 需模版中存在
+                map.put("PagePackage", mpGenConfig.getParentpackage() + ".utils");
+                this.setMap(map);
+            }
+        };
+
+        List<FileOutConfig> focList = new ArrayList<FileOutConfig>();
+        focList.add(new FileOutConfig("/vm/PageSearchVO.java.ftl") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                // 自定义输出位置
+                return projectPath + "/src/main/java/" + mpGenConfig.getCustomizepackage() + "/PageSearchVO.java";
+            }
+        });
+
+        cfg.setFileOutConfigList(focList);
+
         //5. 整合配置
         AutoGenerator ag = new AutoGenerator();
         ag.setGlobalConfig(config)
                 .setDataSource(dsConfig)
                 .setStrategy(stConfig)
-                .setPackageInfo(pkConfig);
-
+                .setPackageInfo(pkConfig)
+                // 模板引擎 选择 freemarker 引擎需要指定如下加，注意 pom 依赖必须有！
+                .setTemplateEngine(new FreemarkerTemplateEngine())
+                //自定义模版
+                .setTemplate(tc)
+                //自定义生成文件
+                .setCfg(cfg);
         //6. 执行
         ag.execute();
     }
